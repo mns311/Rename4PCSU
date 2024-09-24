@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import subprocess
 import os
-import sys
+
 
 
 def launch_app(app_name):
@@ -21,22 +21,10 @@ def launch_app(app_name):
 def main():
     """メインアプリケーションのUIを作成"""
     root = tk.Tk()
-    root.title("Re：ゼロから始める名前変更_Mk2")
+    root.title("Rename4PCSU")
 
     # ウィンドウのサイズを設定 (幅 x 高さ)
     root.geometry("400x150")  # ウィンドウのサイズを400x150に設定
-
-    # アイコンの設定
-    try:
-        if getattr(sys, 'frozen', False):  # PyInstallerでバンドルされているかどうかをチェック
-            application_path = sys._MEIPASS
-        else:
-            application_path = os.path.dirname(__file__)
-
-        icon_path = os.path.join(application_path, 'favicon.ico')
-        root.iconbitmap(icon_path)  # アイコンファイルを設定
-    except Exception as e:
-        print(f"アイコンが見つかりません: {e}")
 
     # アプリケーション選択用のUI要素
     ttk.Label(root, text="ボタンを選んでね^^").pack(pady=10)
