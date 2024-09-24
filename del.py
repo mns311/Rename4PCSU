@@ -2,7 +2,6 @@ import os
 import re
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
-import sys
 
 
 def extract_info_from_filename(filename):
@@ -124,56 +123,37 @@ def execute_changes(changes, confirmation_window):
     reset_fields(confirmation_window)  # 入力フィールドをリセット
     messagebox.showinfo("完了", "ファイルを配布データ化したよ！どういたしまして^^")
 
-def main():
-    global root, entry_files, entry_folder, btn_rename_files
-    # GUIのセットアップ
-    root = tk.Tk()
-    root.title("配布データ化")
 
-    # アイコンの設定
-    try:
-        if getattr(sys, 'frozen', False):  # PyInstallerでバンドルされているかどうかをチェック
-            application_path = sys._MEIPASS
-        else:
-            application_path = os.path.dirname(__file__)
+# GUIのセットアップ
+root = tk.Tk()
+root.title("配布データ化")
 
-        icon_path = os.path.join(application_path, 'favicon.ico')
-        root.iconbitmap(icon_path)  # アイコンファイルを設定
-    except Exception as e:
-        print(f"アイコンが見つかりません: {e}")
+style = ttk.Style()
+style.configure('TButton')
+style.configure('TLabel')
+style.configure('TEntry')
+style.configure('TRadiobutton')
 
+root.bind('<Configure>')
 
+frame_select = ttk.Frame(root)
+frame_select.grid(row=0, column=0, padx=5, pady=5, sticky="ew", columnspan=3)
 
-    style = ttk.Style()
-    style.configure('TButton')
-    style.configure('TLabel')
-    style.configure('TEntry')
-    style.configure('TRadiobutton')
+ttk.Label(frame_select, text="ファイルを選択").grid(row=0, column=0, padx=5, pady=5, sticky="e")
+entry_files = ttk.Entry(frame_select, width=30)
+entry_files.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+ttk.Button(frame_select, text="ファイルを選択", command=select_files).grid(row=0, column=2, padx=5, pady=5, sticky="ew")
 
-    root.bind('<Configure>')
+ttk.Label(frame_select, text="フォルダを選択").grid(row=0, column=3, padx=5, pady=5, sticky="e")
+entry_folder = ttk.Entry(frame_select, width=30)
+entry_folder.grid(row=0, column=4, padx=5, pady=5, sticky="ew")
+ttk.Button(frame_select, text="フォルダを選択", command=select_folder).grid(row=0, column=5, padx=5, pady=5, sticky="ew")
 
-    frame_select = ttk.Frame(root)
-    frame_select.grid(row=0, column=0, padx=5, pady=5, sticky="ew", columnspan=3)
+# ファイル名をリネームするボタン
+btn_rename_files = ttk.Button(root, text="配布データ化", command=rename_files, state=tk.DISABLED)
+btn_rename_files.grid(row=5, column=0, columnspan=3, pady=10, sticky="ew")
 
-    ttk.Label(frame_select, text="ファイルを選択").grid(row=0, column=0, padx=5, pady=5, sticky="e")
-    entry_files = ttk.Entry(frame_select, width=30)
-    entry_files.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
-    ttk.Button(frame_select, text="ファイルを選択", command=select_files).grid(row=0, column=2, padx=5, pady=5, sticky="ew")
-
-    ttk.Label(frame_select, text="フォルダを選択").grid(row=0, column=3, padx=5, pady=5, sticky="e")
-    entry_folder = ttk.Entry(frame_select, width=30)
-    entry_folder.grid(row=0, column=4, padx=5, pady=5, sticky="ew")
-    ttk.Button(frame_select, text="フォルダを選択", command=select_folder).grid(row=0, column=5, padx=5, pady=5, sticky="ew")
-
-    # ファイル名をリネームするボタン
-    btn_rename_files = ttk.Button(root, text="配布データ化", command=rename_files, state=tk.DISABLED)
-    btn_rename_files.grid(row=5, column=0, columnspan=3, pady=10, sticky="ew")
-
-    root.mainloop()
-
-
-if __name__ == "__main__":
-    main()
+root.mainloop()
 
 
 
