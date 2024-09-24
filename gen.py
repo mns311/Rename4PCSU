@@ -2,7 +2,6 @@ import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from tkinter import ttk
-import sys
 
 def get_user_input():
     year = entry_year.get()
@@ -137,101 +136,84 @@ def update_version():
     entry_version.delete(0, tk.END)
     entry_version.insert(0, version_dict[selected_version])
 
-def main():
-    global root, entry_year, selected_course_type, entry_other_course_type
-    global entry_course_number, selected_category, entry_other_category
-    global entry_version, selected_version_type
 
-    # GUIのセットアップ
-    root = tk.Tk()
-    root.title("ファイル名生成")
+# GUIのセットアップ
+root = tk.Tk()
+root.title("ファイル名生成")
 
-    # アイコンの設定
-    try:
-        if getattr(sys, 'frozen', False):  # PyInstallerでバンドルされているかどうかをチェック
-            application_path = sys._MEIPASS
-        else:
-            application_path = os.path.dirname(__file__)
 
-        icon_path = os.path.join(application_path, 'favicon.ico')
-        root.iconbitmap(icon_path)  # アイコンファイルを設定
-    except Exception as e:
-        print(f"アイコンが見つかりません: {e}")
+# Setting style for ttk widgets
+style = ttk.Style()
+style.configure('TButton')
+style.configure('TLabel')
+style.configure('TRadiobutton')
+style.configure('TEntry')
 
-    # Setting style for ttk widgets
-    style = ttk.Style()
-    style.configure('TButton')
-    style.configure('TLabel')
-    style.configure('TRadiobutton')
-    style.configure('TEntry')
+root.bind('<Configure>')
 
-    root.bind('<Configure>')
+# Labels and Entries
+ttk.Label(root, text="年度").grid(row=0, column=0, padx=5, pady=5, sticky="e")
+entry_year = ttk.Entry(root)
+entry_year.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
 
-    # Labels and Entries
-    ttk.Label(root, text="年度").grid(row=0, column=0, padx=5, pady=5, sticky="e")
-    entry_year = ttk.Entry(root)
-    entry_year.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+ttk.Label(root, text="講座名").grid(row=1, column=0, padx=5, pady=5, sticky="e")
 
-    ttk.Label(root, text="講座名").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+frame_course = ttk.Frame(root)
+frame_course.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
+frame_course.grid_propagate(False)
 
-    frame_course = ttk.Frame(root)
-    frame_course.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
-    frame_course.grid_propagate(False)
+selected_course_type = tk.StringVar(value="Std")
 
-    selected_course_type = tk.StringVar(value="Std")
+ttk.Radiobutton(frame_course, text="Std", variable=selected_course_type, value="Std", command=toggle_other_course_type_entry).pack(side=tk.LEFT)
+ttk.Radiobutton(frame_course, text="Adv", variable=selected_course_type, value="Adv", command=toggle_other_course_type_entry).pack(side=tk.LEFT)
+ttk.Radiobutton(frame_course, text="その他", variable=selected_course_type, value="その他", command=toggle_other_course_type_entry).pack(side=tk.LEFT)
+entry_other_course_type = ttk.Entry(root, width=10)
+entry_other_course_type.grid(row=1, column=2, padx=5, pady=5, sticky="w")
+entry_other_course_type.grid_remove()
 
-    ttk.Radiobutton(frame_course, text="Std", variable=selected_course_type, value="Std", command=toggle_other_course_type_entry).pack(side=tk.LEFT)
-    ttk.Radiobutton(frame_course, text="Adv", variable=selected_course_type, value="Adv", command=toggle_other_course_type_entry).pack(side=tk.LEFT)
-    ttk.Radiobutton(frame_course, text="その他", variable=selected_course_type, value="その他", command=toggle_other_course_type_entry).pack(side=tk.LEFT)
-    entry_other_course_type = ttk.Entry(root, width=10)
-    entry_other_course_type.grid(row=1, column=2, padx=5, pady=5, sticky="w")
-    entry_other_course_type.grid_remove()
+ttk.Label(root, text="第").grid(row=2, column=0, padx=5, pady=5, sticky="e")
+ttk.Label(root, text="講").grid(row=2, column=2, padx=0, pady=0, sticky="w")
+entry_course_number = ttk.Entry(root)
+entry_course_number.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
+entry_course_number.bind("<FocusOut>", convert_number_to_suffix)
 
-    ttk.Label(root, text="第").grid(row=2, column=0, padx=5, pady=5, sticky="e")
-    ttk.Label(root, text="講").grid(row=2, column=2, padx=0, pady=0, sticky="w")
-    entry_course_number = ttk.Entry(root)
-    entry_course_number.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
-    entry_course_number.bind("<FocusOut>", convert_number_to_suffix)
+ttk.Label(root, text="種類").grid(row=3, column=0, padx=5, pady=5, sticky="e")
 
-    ttk.Label(root, text="種類").grid(row=3, column=0, padx=5, pady=5, sticky="e")
+frame_category = ttk.Frame(root)
+frame_category.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
+frame_category.grid_propagate(False)
 
-    frame_category = ttk.Frame(root)
-    frame_category.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
-    frame_category.grid_propagate(False)
+selected_category = tk.StringVar(value="PP")
 
-    selected_category = tk.StringVar(value="PP")
+ttk.Radiobutton(frame_category, text="PP", variable=selected_category, value="PP", command=toggle_other_category_entry).pack(side=tk.LEFT)
+ttk.Radiobutton(frame_category, text="ExD", variable=selected_category, value="ExD", command=toggle_other_category_entry).pack(side=tk.LEFT)
+ttk.Radiobutton(frame_category, text="InD", variable=selected_category, value="InD", command=toggle_other_category_entry).pack(side=tk.LEFT)
+ttk.Radiobutton(frame_category, text="その他", variable=selected_category, value="その他", command=toggle_other_category_entry).pack(side=tk.LEFT)
 
-    ttk.Radiobutton(frame_category, text="PP", variable=selected_category, value="PP", command=toggle_other_category_entry).pack(side=tk.LEFT)
-    ttk.Radiobutton(frame_category, text="ExD", variable=selected_category, value="ExD", command=toggle_other_category_entry).pack(side=tk.LEFT)
-    ttk.Radiobutton(frame_category, text="InD", variable=selected_category, value="InD", command=toggle_other_category_entry).pack(side=tk.LEFT)
-    ttk.Radiobutton(frame_category, text="その他", variable=selected_category, value="その他", command=toggle_other_category_entry).pack(side=tk.LEFT)
+entry_other_category = ttk.Entry(root, width=10)
+entry_other_category.grid(row=3, column=3, padx=5, pady=5, sticky="ew")
+entry_other_category.grid_remove()
 
-    entry_other_category = ttk.Entry(root, width=10)
-    entry_other_category.grid(row=3, column=3, padx=5, pady=5, sticky="ew")
-    entry_other_category.grid_remove()
+ttk.Label(root, text="バージョンタイプ").grid(row=4, column=0, padx=5, pady=5, sticky="e")
 
-    ttk.Label(root, text="バージョンタイプ").grid(row=4, column=0, padx=5, pady=5, sticky="e")
+frame_version = ttk.Frame(root)
+frame_version.grid(row=4, column=1, columnspan=2, padx=5, pady=5, sticky="ew")
 
-    frame_version = ttk.Frame(root)
-    frame_version.grid(row=4, column=1, columnspan=2, padx=5, pady=5, sticky="ew")
+version_options = [
+    "1. アウトライン", "2. モギモギ", "3. 模擬",
+    "4. 納入", "5. 最終確認", "6. 講座用データ", "7. 振り返り", "8. その他"
+]
 
-    version_options = [
-        "1. アウトライン", "2. モギモギ", "3. 模擬",
-        "4. 納入", "5. 最終確認", "6. 講座用データ", "7. 振り返り", "8. その他"
-    ]
+selected_version_type = tk.StringVar(value="")
+for i, version in enumerate(version_options):
+    ttk.Radiobutton(frame_version, text=version, variable=selected_version_type, value=version, command=update_version).grid(row=i // 4, column=i % 4, padx=5, pady=5, sticky="ew")
 
-    selected_version_type = tk.StringVar(value="")
-    for i, version in enumerate(version_options):
-        ttk.Radiobutton(frame_version, text=version, variable=selected_version_type, value=version, command=update_version).grid(row=i // 4, column=i % 4, padx=5, pady=5, sticky="ew")
+ttk.Label(root, text="バージョン").grid(row=5, column=0, padx=5, pady=5, sticky="e")
+entry_version = ttk.Entry(root)
+entry_version.insert(0, "v0.0.0")
+entry_version.grid(row=5, column=1, padx=5, pady=5, sticky="ew")
 
-    ttk.Label(root, text="バージョン").grid(row=5, column=0, padx=5, pady=5, sticky="e")
-    entry_version = ttk.Entry(root)
-    entry_version.insert(0, "v0.0.0")
-    entry_version.grid(row=5, column=1, padx=5, pady=5, sticky="ew")
+ttk.Button(root, text="ファイル名生成", command=rename_files).grid(row=6, column=0, columnspan=3, pady=10, sticky="ew")
 
-    ttk.Button(root, text="ファイル名生成", command=rename_files).grid(row=6, column=0, columnspan=3, pady=10, sticky="ew")
+root.mainloop()
 
-    root.mainloop()
-
-if __name__ == "__main__":
-    main()
