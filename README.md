@@ -4,7 +4,7 @@ PCSU内の命名規則に沿ってファイル名を一括編集します．<br>
 
 
 ## How to use
-1. "all.py", "gen.py", "upd.py", "del.py" をダウンロードして同じディレクトリに格納
+1. "Rename4PCSU.py", "source" をダウンロード
 2. "all.py" を実行
 3. 使用したいアプリケーションを選択
     * ファイル名生成<br>
@@ -19,16 +19,16 @@ PCSU内の命名規則に沿ってファイル名を一括編集します．<br>
     
 
 ## Config
-### gen.py：ファイル名生成
+### ファイル名生成：gen.py
 PCSU内のファイルの命名則を生成<br>
 例：25年度スタンダード講座第１講モギモギ用データ<br>
 PP.pptx→25-Std1stPPv2.0.0.pptx
 第１回課題.pdf→ 25-Std1stExD（第１回課題）v2.0.0.pdf
-### upd.py：バージョン更新
+### バージョン更新：upd.py
 ファイルのバージョンを更新<br>
 例：モギモギ→模擬<br>
 25-Std1stExD（第１回課題）v2.0.0.pdf → 25-Std1stExD（第１回課題）v3.0.0.pdf
-### del.py：配布データ化
+### 配布データ化：del.py
 PCSU内のファイルの命名則を削除<br>
 例：講座用データ→配布データ<br>
 25-Std1stExD（第１回課題）v6.0.0.pdf → 第１回課題.pdf<br>
