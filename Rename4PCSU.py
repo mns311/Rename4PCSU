@@ -3,20 +3,19 @@ from tkinter import ttk
 import subprocess
 import os
 
-
-
 def launch_app(app_name):
     """アプリケーションを起動する関数"""
     exe_dir = os.path.dirname(os.path.abspath(__file__))  # exeのディレクトリを取得
+    source_dir = os.path.join(exe_dir, "source")  # sourceフォルダのパスを取得
+    
     if app_name == "ファイル名生成":
-        subprocess.run([os.path.join(exe_dir, "gen.exe")])  # c.exeを実行
+        subprocess.run(["python", os.path.join(source_dir, "gen.py")])  # gen.pyを実行
     elif app_name == "バージョン更新":
-        subprocess.run([os.path.join(exe_dir, "upd.exe")])  # d.exeを実行
+        subprocess.run(["python", os.path.join(source_dir, "upd.py")])  # upd.pyを実行
     elif app_name == "配布データ化":
-        subprocess.run([os.path.join(exe_dir, "del.exe")])  # e.exeを実行
+        subprocess.run(["python", os.path.join(source_dir, "del.py")])  # del.pyを実行
     else:
         print("Invalid app name")
-
 
 def main():
     """メインアプリケーションのUIを作成"""
