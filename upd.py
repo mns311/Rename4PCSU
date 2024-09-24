@@ -2,7 +2,6 @@ import os
 import re
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
-import sys
 
 def extract_version_from_filename(filename):
     match = re.search(r'v\d+\.\d+\.\d+', filename)
@@ -123,83 +122,65 @@ def update_versions():
     # ファイルリストウィンドウを開いて、変更前後のファイル名を表示
     show_file_list_window(file_paths)
 
-def main():
-    global root, entry_files, entry_folder, entry_current_version, entry_new_version, selected_version_type
-    # GUIのセットアップ
-    root = tk.Tk()
-    root.title("バージョンタイプ更新")
 
-    # アイコンの設定
-    try:
-        if getattr(sys, 'frozen', False):  # PyInstallerでバンドルされているかどうかをチェック
-            application_path = sys._MEIPASS
-        else:
-            application_path = os.path.dirname(__file__)
+# GUIのセットアップ
+root = tk.Tk()
+root.title("バージョンタイプ更新")
 
-        icon_path = os.path.join(application_path, 'favicon.ico')
-        root.iconbitmap(icon_path)  # アイコンファイルを設定
-    except Exception as e:
-        print(f"アイコンが見つかりません: {e}")
+# Setting style for ttk widgets
+style = ttk.Style()
+style.configure('TButton')  
+style.configure('TLabel')
+style.configure('TEntry')
+style.configure('TRadiobutton')
 
+root.bind('<Configure>')
 
+# ファイルとフォルダ選択を1行に配置
+frame_select = ttk.Frame(root)
+frame_select.grid(row=0, column=0, padx=5, pady=5, sticky="ew", columnspan=3)
 
-    # Setting style for ttk widgets
-    style = ttk.Style()
-    style.configure('TButton')  
-    style.configure('TLabel')
-    style.configure('TEntry')
-    style.configure('TRadiobutton')
+# ファイル選択ボタンとエントリー
+ttk.Label(frame_select, text="ファイルを選択").grid(row=0, column=0, padx=5, pady=5, sticky="e")
+entry_files = ttk.Entry(frame_select, width=30)
+entry_files.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+ttk.Button(frame_select, text="ファイルを選択", command=select_files).grid(row=0, column=2, padx=5, pady=5, sticky="ew")
 
-    root.bind('<Configure>')
+# フォルダ選択ボタンとエントリー
+ttk.Label(frame_select, text="フォルダを選択").grid(row=0, column=3, padx=5, pady=5, sticky="e")
+entry_folder = ttk.Entry(frame_select, width=30)
+entry_folder.grid(row=0, column=4, padx=5, pady=5, sticky="ew")
+ttk.Button(frame_select, text="フォルダを選択", command=select_folder).grid(row=0, column=5, padx=5, pady=5, sticky="ew")
 
-    # ファイルとフォルダ選択を1行に配置
-    frame_select = ttk.Frame(root)
-    frame_select.grid(row=0, column=0, padx=5, pady=5, sticky="ew", columnspan=3)
+# 現在のバージョンラベルとエントリー
+ttk.Label(root, text="現在のバージョン").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+entry_current_version = ttk.Entry(root)
+entry_current_version.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
 
-    # ファイル選択ボタンとエントリー
-    ttk.Label(frame_select, text="ファイルを選択").grid(row=0, column=0, padx=5, pady=5, sticky="e")
-    entry_files = ttk.Entry(frame_select, width=30)
-    entry_files.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
-    ttk.Button(frame_select, text="ファイルを選択", command=select_files).grid(row=0, column=2, padx=5, pady=5, sticky="ew")
+# バージョンタイプラベルとエントリー
+ttk.Label(root, text="バージョンタイプ").grid(row=2, column=0, padx=5, pady=5, sticky="e")
 
-    # フォルダ選択ボタンとエントリー
-    ttk.Label(frame_select, text="フォルダを選択").grid(row=0, column=3, padx=5, pady=5, sticky="e")
-    entry_folder = ttk.Entry(frame_select, width=30)
-    entry_folder.grid(row=0, column=4, padx=5, pady=5, sticky="ew")
-    ttk.Button(frame_select, text="フォルダを選択", command=select_folder).grid(row=0, column=5, padx=5, pady=5, sticky="ew")
+frame_version = ttk.Frame(root)
+frame_version.grid(row=2, column=1, columnspan=2, padx=5, pady=5, sticky="ew")
 
-    # 現在のバージョンラベルとエントリー
-    ttk.Label(root, text="現在のバージョン").grid(row=1, column=0, padx=5, pady=5, sticky="e")
-    entry_current_version = ttk.Entry(root)
-    entry_current_version.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
+version_options = [
+    "1. アウトライン", "2. モギモギ", "3. 模擬",
+    "4. 納入", "5. 最終確認", "6. 講座用データ", "7. 振り返り", "8. その他"
+]
 
-    # バージョンタイプラベルとエントリー
-    ttk.Label(root, text="バージョンタイプ").grid(row=2, column=0, padx=5, pady=5, sticky="e")
+selected_version_type = tk.StringVar(value="")
+for i, version in enumerate(version_options):
+    ttk.Radiobutton(frame_version, text=version, variable=selected_version_type, value=version, command=update_version).grid(row=i // 4, column=i % 4, padx=5, pady=5, sticky="ew")
 
-    frame_version = ttk.Frame(root)
-    frame_version.grid(row=2, column=1, columnspan=2, padx=5, pady=5, sticky="ew")
+# 変更後のバージョンラベルとエントリー
+ttk.Label(root, text="変更後のバージョン").grid(row=3, column=0, padx=5, pady=5, sticky="e")
+entry_new_version = ttk.Entry(root)
+entry_new_version.insert(0, "v0.0.0")
+entry_new_version.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
 
-    version_options = [
-        "1. アウトライン", "2. モギモギ", "3. 模擬",
-        "4. 納入", "5. 最終確認", "6. 講座用データ", "7. 振り返り", "8. その他"
-    ]
+# バージョンを更新するボタン
+ttk.Button(root, text="バージョンを更新", command=update_versions).grid(row=4, column=0, columnspan=3, pady=10, sticky="ew")
 
-    selected_version_type = tk.StringVar(value="")
-    for i, version in enumerate(version_options):
-        ttk.Radiobutton(frame_version, text=version, variable=selected_version_type, value=version, command=update_version).grid(row=i // 4, column=i % 4, padx=5, pady=5, sticky="ew")
-
-    # 変更後のバージョンラベルとエントリー
-    ttk.Label(root, text="変更後のバージョン").grid(row=3, column=0, padx=5, pady=5, sticky="e")
-    entry_new_version = ttk.Entry(root)
-    entry_new_version.insert(0, "v0.0.0")
-    entry_new_version.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
-
-    # バージョンを更新するボタン
-    ttk.Button(root, text="バージョンを更新", command=update_versions).grid(row=4, column=0, columnspan=3, pady=10, sticky="ew")
-
-    root.mainloop()
-
-if __name__ == "__main__":
-    main()
+root.mainloop()
 
 
