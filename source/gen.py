@@ -124,14 +124,13 @@ def toggle_other_course_type_entry():
 def update_version():
     selected_version = selected_version_type.get()
     version_dict = {
-        "1. アウトライン": "v1.0.0",
-        "2. モギモギ": "v2.0.0",
-        "3. 模擬": "v3.0.0",
-        "4. 納入": "v4.0.0",
-        "5. 最終確認": "v5.0.0",
-        "6. 講座用データ": "v6.0.0",
-        "7. 振り返り": "v7.0.0",
-        "8. その他": "v.."
+        "1. モギモギ": "v1.0.0",
+        "2. 模擬": "v2.0.0",
+        "3. 納入": "v3.0.0",
+        "4. 最終確認": "v4.0.0",
+        "5. 講座用データ": "v5.0.0",
+        "6. 振り返り": "v6.0.0",
+        "7. その他": "v.."
     }
     entry_version.delete(0, tk.END)
     entry_version.insert(0, version_dict[selected_version])
@@ -200,8 +199,8 @@ frame_version = ttk.Frame(root)
 frame_version.grid(row=4, column=1, columnspan=2, padx=5, pady=5, sticky="ew")
 
 version_options = [
-    "1. アウトライン", "2. モギモギ", "3. 模擬",
-    "4. 納入", "5. 最終確認", "6. 講座用データ", "7. 振り返り", "8. その他"
+    "1. モギモギ", "2. 模擬",
+    "3. 納入", "4. 最終確認", "5. 講座用データ", "6. 振り返り", "7. その他"
 ]
 
 selected_version_type = tk.StringVar(value="")
