@@ -2,7 +2,6 @@ import os
 import re
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
-import sys
 
 def extract_version_from_filename(filename):
     match = re.search(r'v\d+\.\d+\.\d+', filename)
