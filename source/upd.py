@@ -2,6 +2,7 @@ import os
 import re
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
+import sys
 
 def extract_version_from_filename(filename):
     match = re.search(r'v\d+\.\d+\.\d+', filename)
@@ -27,11 +28,14 @@ def select_folder():
         # 選択されたフォルダ内のファイルから最初のバージョンを抽出
         files = []
         file_paths = []
+        
         for root_dir, dirs, file_list in os.walk(folder_path):
             for file in file_list:
                 if extract_version_from_filename(file):  # バージョンを持つファイルのみをリストに追加
+                    full_path = os.path.join(root_dir, file)  # フルパスを取得
                     files.append(file)
-                    file_paths.append(os.path.join(folder_path, file))
+                    file_paths.append(full_path)
+                    
         if files:
             first_version = extract_version_from_filename(files[0])
             entry_current_version.delete(0, tk.END)
@@ -44,18 +48,19 @@ def select_folder():
 
 
 
+
 def update_version():
     selected_version = selected_version_type.get()
     version_dict = {
-        "1. アウトライン": "v1.0.0",
-        "2. モギモギ": "v2.0.0",
-        "3. 模擬": "v3.0.0",
-        "4. 納入": "v4.0.0",
-        "5. 最終確認": "v5.0.0",
-        "6. 講座用データ": "v6.0.0",
-        "7. 振り返り": "v7.0.0",
-        "8. その他": "v.."
+    "1. モギモギ": "v1.0.0",
+    "2. 模擬": "v2.0.0",
+    "3. 納入": "v3.0.0",
+    "4. 最終確認": "v4.0.0",
+    "5. 講座用データ": "v5.0.0",
+    "6. 振り返り": "v6.0.0",
+    "7. その他": "v.."
     }
+
     entry_new_version.delete(0, tk.END)
     entry_new_version.insert(0, version_dict[selected_version])
 
@@ -67,13 +72,13 @@ def show_file_list_window(filepaths):
     ttk.Label(file_list_window, text="変更前のファイル名").grid(row=0, column=0, padx=10, pady=5, sticky="ew")
     ttk.Label(file_list_window, text="変更後のファイル名").grid(row=0, column=1, padx=10, pady=5, sticky="ew")
 
-    old_new_filenames = []  # 変更前と変更後のファイル名を格納するリスト
+    old_new_filenames = []  # 変更前と変更後のフルファイルパスを格納するリスト
     new_version = entry_new_version.get()  # ユーザーが指定した新しいバージョンを取得
 
     # ファイル名を取得し、新しいファイル名を生成
     for i, filepath in enumerate(filepaths):
         old_filename = os.path.basename(filepath)  # ファイルパスからファイル名のみを取得
-        old_new_filenames.append((old_filename, None))  # 変更前のファイル名を追加
+        dir_name = os.path.dirname(filepath)  # 親ディレクトリを取得
 
         # 新しいファイル名を生成 (バージョン番号を置換)
         if new_version:  # 新しいバージョンが指定されている場合
@@ -81,7 +86,8 @@ def show_file_list_window(filepaths):
         else:
             new_filename = old_filename  # バージョンが指定されていない場合、変更なし
 
-        old_new_filenames[i] = (old_filename, new_filename)  # 変更後のファイル名を保存
+        # フルパスを生成してリストに保存
+        old_new_filenames.append((filepath, os.path.join(dir_name, new_filename)))
 
         # 変更前のファイル名と変更後のファイル名をウィンドウに表示
         ttk.Label(file_list_window, text=old_filename).grid(row=i+1, column=0, padx=10, pady=5, sticky="ew")
@@ -89,18 +95,15 @@ def show_file_list_window(filepaths):
 
     def apply_changes():
         """ファイル名変更を実行する処理"""
-        for old_filename, new_filename in old_new_filenames:
+        for old_filepath, new_filepath in old_new_filenames:
             try:
-                dir_path = os.path.dirname(filepaths[0])  # 最初のファイルのディレクトリを取得
-                old_filepath = os.path.join(dir_path, old_filename)  # 旧ファイルパス
-                new_filepath = os.path.join(dir_path, new_filename)  # 新ファイルパス
-
+                # すでにフルパスが保存されているので、そのままリネーム
                 if old_filepath != new_filepath:  # 同じ名前でない場合のみリネーム
                     os.rename(old_filepath, new_filepath)
             except Exception as e:
                 messagebox.showerror("エラー", f"ファイル名の変更に失敗しました: {e}")
                 return
-        
+
         messagebox.showinfo("成功", "ファイルのバージョンを更新したよ！どういたしまして^^")
         file_list_window.destroy()
 
@@ -164,10 +167,9 @@ frame_version = ttk.Frame(root)
 frame_version.grid(row=2, column=1, columnspan=2, padx=5, pady=5, sticky="ew")
 
 version_options = [
-    "1. アウトライン", "2. モギモギ", "3. 模擬",
-    "4. 納入", "5. 最終確認", "6. 講座用データ", "7. 振り返り", "8. その他"
+"1. モギモギ", "2. 模擬",
+"3. 納入", "4. 最終確認", "5. 講座用データ", "6. 振り返り", "7. その他"
 ]
-
 selected_version_type = tk.StringVar(value="")
 for i, version in enumerate(version_options):
     ttk.Radiobutton(frame_version, text=version, variable=selected_version_type, value=version, command=update_version).grid(row=i // 4, column=i % 4, padx=5, pady=5, sticky="ew")
