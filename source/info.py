@@ -1,3 +1,4 @@
+#Mk4(2024/10/16)
 import os
 import re
 import tkinter as tk
@@ -102,44 +103,45 @@ def display_classified_files(classified_files):
     """分類されたファイルを表示"""
     text_files.delete('1.0', tk.END)  # テキストボックスをクリア
     
-    main_file = get_main_file(classified_files)
-    
-    if main_file:
-        # 正規表現パターンの更新
+    # 最初のファイルを取得（PP、ExDなど、どの種類でも）
+    first_file = next((file for files in classified_files.values() for file in files), None)
+
+    if first_file:
         pattern = r'(?P<year>\d+)-(?P<course_type>[A-Za-z]+)(?P<course_number>\d+\w+)(?P<file_type>ExD|PP)(?:（[^）]+）)?v(?P<version>\d+\.\d+\.\d+)\.(?P<ext>.+)'
-        match = re.match(pattern, main_file)
+        match = re.match(pattern, first_file)
+
         if match:
             year = match.group('year')
             course_type = match.group('course_type')
             course_number = match.group('course_number')
             version = match.group('version')
-            version_full = f"v{version}"
-            # バージョン番号から日本語を取得
-            version_japanese = next((jp.split('. ')[1] for jp in version_mapping if version_mapping[jp] == version_full), "その他")
-            # 用途を取得
-            usage_japanese = usage_mapping.get(version_full, "その他")
-            
+            version_major = version.split('.')[0]  # メジャーバージョンを取得
+
+            # メジャーバージョンに基づく日本語の取得
+            version_japanese = next((jp.split('. ')[1] for jp in version_mapping if version_mapping[jp] == f"v{version_major}.0.0"), "その他")
+            usage_japanese = version_japanese  # メジャーバージョンに基づく用途を使用
+
             # 出力項目の作成
-            # 【データアップ報告 25-Adv3rd】
             text_files.insert(tk.END, f"【データアップ報告 {year}-{course_type}{course_number}】\n")
-            # 25-Adv3rdの講座用データをCANVASにアップロードしました。
             text_files.insert(tk.END, f"{year}-{course_type}{course_number}の{usage_japanese}用データをCANVASにアップロードしました。\n")
-            # 《用途》講座用
             text_files.insert(tk.END, f"《用途》{usage_japanese}\n")
             text_files.insert(tk.END, "《場所》\n")
             text_files.insert(tk.END, "ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー\n")
         else:
-            # ファイル名が期待する形式でない場合のエラーメッセージ
             text_files.insert(tk.END, "ファイル名の形式が正しくありません。\n")
-    
+    else:
+        # すべてのファイルが存在しない場合の処理
+        text_files.insert(tk.END, "ファイルが見つかりませんでした。\n")
+
     # 各カテゴリのファイルを表示
     for category, files in classified_files.items():
         if files:
             text_files.insert(tk.END, f"＜{category}＞\n")
             for file in files:
                 text_files.insert(tk.END, f"・{file}\n")
-    
+
     text_files.insert(tk.END, "ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー\n")
+
 
 # GUIのセットアップ
 root = tk.Tk()
