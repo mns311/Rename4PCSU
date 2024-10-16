@@ -23,7 +23,7 @@ def launch_app(app_name):
 def main():
     """メインアプリケーションのUIを作成"""
     root = tk.Tk()
-    root.title("Rename4PCSU")
+    root.title("Rename4PCSU_Mk4")
 
     # ウィンドウのサイズを設定 (幅 x 高さ)
     root.geometry("400x190")  # ウィンドウのサイズを400x150に設定
