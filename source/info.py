@@ -90,7 +90,7 @@ def extract_and_classify_selected_files(file_paths):
 
 def get_main_file(classified_files):
     """主要なファイルから情報を抽出する。PPが存在すればPPから、なければ他から。"""
-    if classified_files['PP']:
+    if classified_files['PP']():
         return classified_files['PP'][0]
     else:
         # 他のカテゴリから最初のファイルを取得
@@ -142,6 +142,15 @@ def display_classified_files(classified_files):
 
     text_files.insert(tk.END, "ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー\n")
 
+# クリップボードにコピーする関数
+def copy_to_clipboard():
+    try:
+        root.clipboard_clear()  # クリップボードをクリア
+        text_content = text_files.get('1.0', tk.END)  # テキストウィジェットの内容を取得
+        root.clipboard_append(text_content)  # クリップボードにテキストをコピー
+        messagebox.showinfo("成功", "ファイル名をクリップボードにコピーしたよ^^\nSlackでみんなに報告しよう!")
+    except Exception as e:
+        messagebox.showerror("エラー", f"クリップボードへのコピー中にエラーが発生しました: {e}")
 
 # GUIのセットアップ
 root = tk.Tk()
@@ -166,13 +175,7 @@ ttk.Button(frame_select, text="フォルダを選択", command=select_folder).gr
 text_files = tk.Text(root, width=80, height=20, wrap='none')  # コピー可能にするため、Textウィジェットを使用
 text_files.grid(row=1, column=0, padx=5, pady=5)
 
-# スクロールバー
-scrollbar_y = ttk.Scrollbar(root, orient="vertical", command=text_files.yview)
-scrollbar_y.grid(row=1, column=1, sticky="ns")
-text_files.config(yscrollcommand=scrollbar_y.set)
-
-scrollbar_x = ttk.Scrollbar(root, orient="horizontal", command=text_files.xview)
-scrollbar_x.grid(row=2, column=0, sticky="ew")
-text_files.config(xscrollcommand=scrollbar_x.set)
+# クリップボードにコピーするボタン
+ttk.Button(root, text="クリップボードにコピー", command=copy_to_clipboard).grid(row=2, column=0, padx=5, pady=5, sticky="ew")
 
 root.mainloop()
