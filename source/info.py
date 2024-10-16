@@ -123,9 +123,9 @@ def display_classified_files(classified_files):
 
             # 出力項目の作成
             text_files.insert(tk.END, f"【データアップ報告 {year}-{course_type}{course_number}】\n")
-            text_files.insert(tk.END, f"{year}-{course_type}{course_number}の{usage_japanese}用データをCANVASにアップロードしました。\n")
+            text_files.insert(tk.END, f"{year}-{course_type}{course_number}の{usage_japanese}用データを○○にアップロードしました。\n")
             text_files.insert(tk.END, f"《用途》{usage_japanese}\n")
-            text_files.insert(tk.END, "《場所》\n")
+            text_files.insert(tk.END, "《場所》○○\n")
             text_files.insert(tk.END, "ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー\n")
         else:
             text_files.insert(tk.END, "ファイル名の形式が正しくありません。\n")
